@@ -1,10 +1,10 @@
 mod model;
 mod parser;
-use std::env;
 use parser::parse_file;
+use std::env;
 fn main() {
     let mut args = env::args();
-    let program = args.next().unwrap(); 
+    let program = args.next().unwrap();
     let path = match args.next() {
         Some(p) => p,
         None => {
@@ -13,8 +13,7 @@ fn main() {
         }
     };
     match parse_file(&path) {
-        Ok(links) => {
-        }
+        Ok(links) => {}
         Err(e) => {
             eprintln!("Error reading file '{}': {}", path, e);
             std::process::exit(1);

@@ -1,7 +1,7 @@
+use crate::model::Link;
+use regex::Regex;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use regex::Regex;
-use crate::model::Link;
 
 pub fn parse_file(path: &str) -> std::io::Result<Vec<Link>> {
     let file = File::open(path)?;
@@ -32,7 +32,7 @@ mod tests {
         #[test]
         fn empty_content_returns_empty_vec() {
             let content = "";
-            let cursor = Cursor::new(content); 
+            let cursor = Cursor::new(content);
             let result = parse_reader(cursor).unwrap();
             assert!(result.is_empty());
         }
