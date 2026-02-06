@@ -4,4 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+futures = "0.3.31"
 regex = "1"
+reqwest = "0.13.1"
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
+
+[dev-dependencies]
+httpmock = "0.7"

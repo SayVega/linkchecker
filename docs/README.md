@@ -13,3 +13,12 @@ It scans the input file (typically a `.md` file) and identifies links written ex
 Links are extracted using a regular expression that captures the link text and the link target.  
 
 No URL validation is performed at this stage; extracted URLs are processed independently in later phases.
+
+## Obtaining data from the URLs
+
+Once the parsing part obtains the `Links`
+
+
+## Notes
+global request timeout = 5 seconds
+process_links accepts empty titles
