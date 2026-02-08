@@ -1,8 +1,14 @@
+mod html_parser;
 mod model;
-mod parser;
-use parser::parse_file;
+mod processor;
+mod text_parser;
+
+use processor::process_links;
 use std::env;
-fn main() {
+use text_parser::parse_file;
+
+#[tokio::main]
+async fn main() {
     let mut args = env::args();
     let program = args.next().unwrap();
     let path = match args.next() {
@@ -13,7 +19,9 @@ fn main() {
         }
     };
     match parse_file(&path) {
-        Ok(links) => {}
+        Ok(links) => {
+            let results = process_links(links).await;
+        }
         Err(e) => {
             eprintln!("Error reading file '{}': {}", path, e);
             std::process::exit(1);
