@@ -1,11 +1,11 @@
-mod model;
-mod text_parser;
-mod processor;
 mod html_parser;
+mod model;
+mod processor;
+mod text_parser;
 
 use processor::process_links;
-use text_parser::parse_file;
 use std::env;
+use text_parser::parse_file;
 
 #[tokio::main]
 async fn main() {

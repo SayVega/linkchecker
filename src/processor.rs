@@ -1,24 +1,21 @@
-use crate::model::{Link, LinkResult, LinkError};
-use reqwest::StatusCode;
-use futures::stream::{self, StreamExt};
 use crate::html_parser::extract_title;
+use crate::model::{Link, LinkError, LinkResult};
+use futures::stream::{self, StreamExt};
+use reqwest::StatusCode;
 use std::time::Duration;
 
-pub async fn process_link(
-    client: &reqwest::Client,
-    link: Link,
-) -> LinkResult {
+pub async fn process_link(client: &reqwest::Client, link: Link) -> LinkResult {
     let response = match client.get(&link.url).send().await {
         Ok(resp) => resp,
         Err(err) => {
-            let error= if err.is_timeout() {
+            let error = if err.is_timeout() {
                 LinkError::Timeout
             } else {
                 LinkError::Network
             };
             return LinkResult {
-            link,
-            result: Err(error),
+                link,
+                result: Err(error),
             };
         }
     };
@@ -35,21 +32,18 @@ pub async fn process_link(
             return LinkResult {
                 link,
                 result: Err(LinkError::InvalidHtml),
-            }
+            };
         }
     };
-    let title = match extract_title(&body) {
-        Some(title) => title,
-        None => {
-            return LinkResult {
-                link,
-                result: Err(LinkError::MissingTitle),
-            }
-        }
-    };
-    return LinkResult {
-        link,
-        result: Ok(title),
+    return match extract_title(&body) {
+        Ok(title) => LinkResult {
+            link,
+            result: Ok(title),
+        },
+        Err(err) => LinkResult {
+            link,
+            result: Err(err),
+        },
     };
 }
 
@@ -68,11 +62,11 @@ pub async fn process_links(links: Vec<Link>) -> Vec<LinkResult> {
 #[cfg(test)]
 mod tests {
     mod getting_request {
-        use httpmock::prelude::*;
-        use crate::model::{Link,LinkError};
+        use crate::model::{Link, LinkError};
         use crate::processor::process_link;
-        use std::time::Duration;
+        use httpmock::prelude::*;
         use reqwest::Client;
+        use std::time::Duration;
 
         fn test_client(timeout_secs: u64) -> Client {
             Client::builder()
@@ -103,10 +97,7 @@ mod tests {
                 url: "http://127.0.0.1:9".into(),
             };
             let result = process_link(&test_client(5), link).await;
-            assert!(matches!(
-                result.result,
-                Err(LinkError::Network)
-            ));
+            assert!(matches!(result.result, Err(LinkError::Network)));
         }
         #[tokio::test]
         async fn process_link_http_error() {
@@ -119,12 +110,10 @@ mod tests {
                 text: "test".into(),
                 url: format!("{}/404", server.url("")),
             };
-            let result = process_link(&test_client(5),link).await;
-            assert!(matches!(
-                result.result,
-                Err(LinkError::InvalidStatus(404))
-            ));
-        }#[tokio::test]
+            let result = process_link(&test_client(5), link).await;
+            assert!(matches!(result.result, Err(LinkError::InvalidStatus(404))));
+        }
+        #[tokio::test]
         async fn process_link_missing_title_tag() {
             let server = MockServer::start();
             server.mock(|when, then| {
@@ -138,10 +127,7 @@ mod tests {
                 url: format!("{}/no-title", server.url("")),
             };
             let result = process_link(&test_client(5), link).await;
-            assert!(matches!(
-                result.result,
-                Err(LinkError::MissingTitle)
-            ));
+            assert!(matches!(result.result, Err(LinkError::MissingTitle)));
         }
         #[tokio::test]
         async fn process_link_empty_title_is_valid() {
@@ -157,7 +143,7 @@ mod tests {
                 text: "empty".into(),
                 url: format!("{}/empty-title", server.url("")),
             };
-            let result = process_link(&test_client(5),link).await;
+            let result = process_link(&test_client(5), link).await;
             match result.result {
                 Ok(title) => assert_eq!(title, ""),
                 Err(e) => panic!("unexpected error: {:?}", e),
@@ -178,11 +164,8 @@ mod tests {
                 text: "slow".into(),
                 url: format!("{}/slow", server.url("")),
             };
-            let result = process_link(&test_client(1),link).await;
-            assert!(matches!(
-                result.result,
-                Err(LinkError::Timeout)
-            ));
+            let result = process_link(&test_client(1), link).await;
+            assert!(matches!(result.result, Err(LinkError::Timeout)));
         }
     }
 }
