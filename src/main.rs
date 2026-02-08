@@ -2,10 +2,12 @@ mod html_parser;
 mod model;
 mod processor;
 mod text_parser;
+mod writer;
 
 use processor::process_links;
 use std::env;
 use text_parser::parse_file;
+use writer::write_results;
 
 #[tokio::main]
 async fn main() {
@@ -21,6 +23,9 @@ async fn main() {
     match parse_file(&path) {
         Ok(links) => {
             let results = process_links(links).await;
+            if let Err(e) = write_results("output.md", &results) {
+                eprintln!("Error writing output: {}", e);
+            }
         }
         Err(e) => {
             eprintln!("Error reading file '{}': {}", path, e);

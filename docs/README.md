@@ -22,3 +22,4 @@ Once the parsing part obtains the `Links`
 ## Notes
 global request timeout = 5 seconds
 process_links accepts empty titles
+regex could be improved
