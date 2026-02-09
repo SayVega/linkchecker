@@ -13,7 +13,13 @@ pub fn write_results(path: &str, results: &[LinkResult]) -> std::io::Result<()> 
                 writeln!(writer, "[{}]({})", title, result.link.url)?;
             }
             Err(err) => {
-                writeln!(writer, "[{} from {}]({})", format_error(err), result.link.text, result.link.url)?;
+                writeln!(
+                    writer,
+                    "[{} from {}]({})",
+                    format_error(err),
+                    result.link.text,
+                    result.link.url
+                )?;
             }
         }
     }
@@ -37,9 +43,9 @@ fn format_error(err: &LinkError) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::NamedTempFile;
-    use std::fs;
     use crate::model::{Link, LinkError, LinkResult};
+    use std::fs;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn writes_ok_result() {

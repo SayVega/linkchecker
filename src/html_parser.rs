@@ -14,17 +14,17 @@ mod tests {
     #[test]
     fn extract_simple_title() {
         let html = "<html><head><title>Example Title</title></head><body></body></html>";
-        assert_eq!(extract_title(html).unwrap(),"Example Title");
+        assert_eq!(extract_title(html).unwrap(), "Example Title");
     }
     #[test]
     fn extract_title_with_whitespace() {
         let html = "<title>\n   Whitespace title \n</title>";
-        assert_eq!(extract_title(html).unwrap(),"Whitespace title");
+        assert_eq!(extract_title(html).unwrap(), "Whitespace title");
     }
     #[test]
     fn extract_empty_title_is_valid() {
         let html = "<title></title>";
-        assert_eq!(extract_title(html).unwrap(),"");
+        assert_eq!(extract_title(html).unwrap(), "");
     }
     #[test]
     fn title_is_case_insensitive() {
