@@ -1,7 +1,6 @@
 use crate::html_parser::extract_title;
 use crate::model::{Link, LinkError, LinkResult};
 use futures::stream::{self, StreamExt};
-use reqwest::StatusCode;
 use std::time::Duration;
 
 pub async fn process_link(client: &reqwest::Client, link: Link) -> LinkResult {
