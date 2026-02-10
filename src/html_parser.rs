@@ -9,6 +9,7 @@ pub fn extract_title(html: &str) -> Result<String, LinkError> {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

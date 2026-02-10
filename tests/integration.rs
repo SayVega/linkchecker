@@ -1,12 +1,11 @@
 use std::fs;
 use tempfile::tempdir;
-
-use linkchecker::processor::process_links;
 use linkchecker::text_parser::parse_file;
+use linkchecker::processor::process_links;
 use linkchecker::writer::write_results;
 
 #[tokio::test]
-async fn linchecker_produces_expected_output() {
+async fn linkchecker_produces_expected_output() {
     let dir = tempdir().unwrap();
     let input_path = dir.path().join("input.md");
     let output_path = dir.path().join("output.md");
