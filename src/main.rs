@@ -1,13 +1,7 @@
-mod html_parser;
-mod model;
-mod processor;
-mod text_parser;
-mod writer;
-
-use processor::process_links;
+use linkchecker::processor::process_links;
+use linkchecker::text_parser::parse_file;
+use linkchecker::writer::write_results;
 use std::env;
-use text_parser::parse_file;
-use writer::write_results;
 
 #[tokio::main]
 async fn main() {
