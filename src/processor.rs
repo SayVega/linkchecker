@@ -167,7 +167,7 @@ mod tests {
             assert!(matches!(result.result, Err(LinkError::Timeout)));
         }
     }
-    mod concurrency{
+    mod concurrency {
         #[tokio::test]
         async fn process_links_order_is_not_preserved() {
             use crate::model::Link;
@@ -181,10 +181,7 @@ mod tests {
                     when.method(GET).path(format!("/{}", i));
                     then.status(200)
                         .delay(Duration::from_millis(*delay))
-                        .body(format!(
-                            "<html><head><title>{}</title></head></html>",
-                            i
-                        ));
+                        .body(format!("<html><head><title>{}</title></head></html>", i));
                 });
             }
             let links: Vec<Link> = (0..3)

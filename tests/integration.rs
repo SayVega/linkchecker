@@ -1,8 +1,8 @@
+use linkchecker::processor::process_links;
+use linkchecker::text_parser::parse_file;
+use linkchecker::writer::write_results;
 use std::fs;
 use tempfile::tempdir;
-use linkchecker::text_parser::parse_file;
-use linkchecker::processor::process_links;
-use linkchecker::writer::write_results;
 
 #[tokio::test]
 async fn linkchecker_produces_expected_output() {
@@ -15,7 +15,8 @@ async fn linkchecker_produces_expected_output() {
         [Example](https://example.com)
         [Broken](http://127.0.0.1:9)
         "#,
-        ).unwrap();
+    )
+    .unwrap();
     let links = parse_file(input_path.to_str().unwrap()).unwrap();
     let results = process_links(links).await;
     write_results(output_path.to_str().unwrap(), &results).unwrap();

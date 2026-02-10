@@ -1,7 +1,7 @@
-use std::env;
 use linkchecker::processor::process_links;
 use linkchecker::text_parser::parse_file;
 use linkchecker::writer::write_results;
+use std::env;
 
 #[tokio::main]
 async fn main() {
