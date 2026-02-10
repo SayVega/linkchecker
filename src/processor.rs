@@ -167,4 +167,69 @@ mod tests {
             assert!(matches!(result.result, Err(LinkError::Timeout)));
         }
     }
+    mod concurrency{
+        #[tokio::test]
+        async fn process_links_order_is_not_preserved() {
+            use crate::model::Link;
+            use crate::processor::process_links;
+            use httpmock::prelude::*;
+            use std::time::Duration;
+            let server = MockServer::start();
+            let delays = [300, 100, 200];
+            for (i, delay) in delays.iter().enumerate() {
+                server.mock(move |when, then| {
+                    when.method(GET).path(format!("/{}", i));
+                    then.status(200)
+                        .delay(Duration::from_millis(*delay))
+                        .body(format!(
+                            "<html><head><title>{}</title></head></html>",
+                            i
+                        ));
+                });
+            }
+            let links: Vec<Link> = (0..3)
+                .map(|i| Link {
+                    text: format!("link{}", i),
+                    url: format!("{}/{}", server.url(""), i),
+                })
+                .collect();
+            let results = process_links(links.clone()).await;
+            assert_eq!(results.len(), links.len());
+            let input_urls: Vec<_> = links.iter().map(|l| &l.url).collect();
+            let output_urls: Vec<_> = results.iter().map(|r| &r.link.url).collect();
+            assert_ne!(input_urls, output_urls);
+        }
+        #[tokio::test]
+        async fn process_links_runs_in_parallel() {
+            use crate::model::Link;
+            use crate::processor::process_links;
+            use httpmock::prelude::*;
+            use std::time::{Duration, Instant};
+            let server = MockServer::start();
+            let delay = Duration::from_millis(200);
+            let n = 8;
+            for i in 0..n {
+                server.mock(move |when, then| {
+                    when.method(GET).path(format!("/{}", i));
+                    then.status(200)
+                        .delay(delay)
+                        .body("<html><head><title>ok</title></head></html>");
+                });
+            }
+            let links: Vec<Link> = (0..n)
+                .map(|i| Link {
+                    text: format!("link{}", i),
+                    url: format!("{}/{}", server.url(""), i),
+                })
+                .collect();
+            let start = Instant::now();
+            let _results = process_links(links).await;
+            let elapsed = start.elapsed();
+            assert!(
+                elapsed < delay * 3,
+                "process_links took {:?}, expected parallel execution",
+                elapsed
+            );
+        }
+    }
 }
