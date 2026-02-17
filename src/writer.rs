@@ -10,7 +10,12 @@ pub fn write_results(path: &str, results: &[LinkResult]) -> std::io::Result<()> 
     for result in results {
         match &result.result {
             Ok(title) => {
-                writeln!(writer, "[{}]({})", title, result.link.url)?;
+                let display_title = if title.is_empty() {
+                    "EMPTY_TITLE"
+                } else {
+                    title
+                };
+                writeln!(writer, "[{}]({})", display_title, result.link.url)?;
             }
             Err(err) => {
                 writeln!(
@@ -79,5 +84,20 @@ mod tests {
             contents,
             "[MISSING_TITLE from example link](https://example.com)\n"
         );
+    }
+    #[test]
+    fn writes_empty_title_as_placeholder() {
+        let file = NamedTempFile::new().unwrap();
+        let path = file.path();
+        let result = LinkResult {
+            link: Link {
+                text: "empty".into(),
+                url: "https://example.com".into(),
+            },
+            result: Ok("".into()),
+        };
+        write_results(path.to_str().unwrap(), &[result]).unwrap();
+        let contents = fs::read_to_string(path).unwrap();
+        assert_eq!(contents, "[EMPTY_TITLE](https://example.com)\n");
     }
 }
