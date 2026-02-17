@@ -2,13 +2,18 @@ use crate::model::LinkError;
 use regex::Regex;
 
 pub fn extract_title(html: &str) -> Result<String, LinkError> {
-    let re = Regex::new(r"(?is)<title>(.*?)</title>").unwrap();
+    let re = Regex::new(r"(?is)<title[^>]*>(.*?)</title>").unwrap();
     match re.captures(html) {
-        Some(caps) => Ok(caps.get(1).unwrap().as_str().trim().to_string()),
+        Some(caps) => Ok(caps
+            .get(1)
+            .unwrap()
+            .as_str()
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")),
         None => Err(LinkError::MissingTitle),
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -18,8 +23,8 @@ mod tests {
         assert_eq!(extract_title(html).unwrap(), "Example Title");
     }
     #[test]
-    fn extract_title_with_whitespace() {
-        let html = "<title>\n   Whitespace title \n</title>";
+    fn extract_title_normalizes_whitespace() {
+        let html = "<title>\n\n   Whitespace   \n\r  title \n</title>";
         assert_eq!(extract_title(html).unwrap(), "Whitespace title");
     }
     #[test]
