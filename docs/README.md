@@ -11,22 +11,22 @@ Linkchecker is a command-line tool written in Rust that analyzes a text file and
 ## Installation
 
 Clone the repository and navigate to the directory
-```
+```bash
 git clone https://github.com/SayVega/linkchecker.git
 cd linkchecker
 ```
 You may optionally install it system-wide:
-```
+```bash
 cargo install --path .
 ```
 ## Usage
 ### Using make
 Compile the binary
-```
+```bash
 make build
 ```
 Run the link checker using a `.txt`/`.md` file as argument:
-```
+```bash
 make run ARGS="example_pages.md"
 ```
 
@@ -34,11 +34,11 @@ make run ARGS="example_pages.md"
 For better performance always use `--release` flag
 
 Build:
-```
+```bash
 cargo build --release
 ```
 Run:
-```
+```bash
 cargo run --release -- available_pages.md
 ```
 
@@ -46,7 +46,7 @@ Note: Output order is not guaranteed due to concurrent processing.
 
 ### Testing
 The suite includes integration tests and unit tests.
-```
+```bash
 make test
 ```
 
