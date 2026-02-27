@@ -2,39 +2,53 @@
 
 Linkchecker is a command-line tool written in Rust that analyzes a text file and processes links written in inline Markdown format.
 
-## Instalation
+## Prerequisites
+* Rust (latest stable)
+* OpenSSL headers (Linux only: `libssl-dev` or `openssl-devel`)
+* `make` (optional)
 
-### From source
 
-```
+## Installation
+
+Clone the repository and navigate to the directory
+```bash
 git clone https://github.com/SayVega/linkchecker.git
 cd linkchecker
-cargo build --release
 ```
-
-Then you will find the binary at:
-
-`target/release/linkchecker`
-
 You may optionally install it system-wide:
-
-```
+```bash
 cargo install --path .
 ```
-
 ## Usage
-
+### Using make
+Compile the binary
+```bash
+make build
 ```
-linkchecker <input_file>
+Run the link checker using a `.txt`/`.md` file as argument:
+```bash
+make run ARGS="example_pages.md"
 ```
 
-Example
+### Using cargo (Manual)
+For better performance always use `--release` flag
 
+Build:
+```bash
+cargo build --release
 ```
-linkchecker available_pages.md
+Run:
+```bash
+cargo run --release -- available_pages.md
 ```
 
 Note: Output order is not guaranteed due to concurrent processing.
+
+### Testing
+The suite includes integration tests and unit tests.
+```bash
+make test
+```
 
 ## Processing pipeline
 
@@ -73,4 +87,14 @@ Sucessful request are written as: `[title](url)`
 
 Failed request are written as: `[error_code from original_text](url)`
 
-PD: Error codes are human-readable
+Error codes are **human-readable** and cover:
+| Error Code | Description |
+| :--- | :--- |
+| **TIMEOUT** | The request exceeded the 5-second limit. |
+| **NETWORK_ERROR** | Connection issues, including DNS resolution failures and refused connections. |
+| **NOT_FOUND** | HTTP 404 status code. |
+| **SERVER_ERROR** | HTTP status codes in the 500-599 range. |
+| **HTTP_ERROR** | Any other non-successful HTTP status code. |
+| **INVALID_HTML** | Response body could not be parsed as HTML. |
+| **MISSING_TITLE** | The HTML was parsed but no title tag was found. |
+| **EMPTY_TITLE** | The HTML was parsed and the title is empty |

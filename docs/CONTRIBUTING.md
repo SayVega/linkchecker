@@ -5,7 +5,6 @@ Contributions are welcome via pull requests.
 ## Guidelines
 
 - Keep the code simple and explicit
-- Follow standard Rust formatting (`cargo fmt`)
 - New functionality should include tests
 
 ## Scope
